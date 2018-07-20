@@ -4,8 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean
 from sqlalchemy.orm import sessionmaker
 from dateutil.parser import parse
-from util import post_listing_to_slack, find_points_of_interest
-from slackclient import SlackClient
+from util import find_points_of_interest
 import time
 import settings
 
@@ -111,19 +110,11 @@ def scrape_area(area):
 
 def do_scrape():
     """
-    Runs the craigslist scraper, and posts data to slack.
+    Runs the craigslist scraper
     """
-
-    # Create a slack client.
-    sc = SlackClient(settings.SLACK_TOKEN)
-
     # Get all the results from craigslist.
     all_results = []
     for area in settings.AREAS:
         all_results += scrape_area(area)
 
     print("{}: Got {} results".format(time.ctime(), len(all_results)))
-
-    # Post each result to slack.
-    for result in all_results:
-        post_listing_to_slack(sc, result)
